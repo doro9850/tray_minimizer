@@ -1,5 +1,5 @@
 # tray_minimizer
-Minimizing app to tray for Windows. Made by Calude Sonnet 5.5
+Minimizing app to tray for Windows. Made by Claude Sonnet 5.5
 
 ### Requirements
 - [Python](https://www.python.org) >= 3.10.0
