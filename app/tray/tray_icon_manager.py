@@ -7,6 +7,7 @@ from app.tray.tray_entry import TrayEntry
 
 class TrayIconManager(QObject):
     restore_requested = Signal(int)
+    close_requested = Signal(int)
 
     def __init__(self, icon_provider: ExecutableIconProvider, parent: QObject | None = None) -> None:
         super().__init__(parent)
@@ -18,6 +19,7 @@ class TrayIconManager(QObject):
             return
         entry = TrayEntry(hwnd, title, self._icon_provider.icon_for(exe_path), self)
         entry.restore_requested.connect(self.restore_requested)
+        entry.close_requested.connect(self.close_requested)
         self._entries[hwnd] = entry
 
     def remove(self, hwnd: int) -> None:

@@ -48,6 +48,7 @@ class TrayMinimizeService(QObject):
 
         self._hook.window_minimized.connect(self._on_window_minimized)
         self._tray.restore_requested.connect(self.restore_window)
+        self._tray.close_requested.connect(self.close_window)
         self._targets.changed.connect(self._on_targets_changed)
 
         self._cleanup_timer = QTimer(self)
@@ -74,6 +75,15 @@ class TrayMinimizeService(QObject):
         self._tray.remove(hwnd)
         if self._controller.is_alive(hwnd):
             self._controller.restore(hwnd)
+
+    def close_window(self, hwnd: int) -> None:
+        """숨겨진 창에 정상 종료(WM_CLOSE)를 요청한다.
+
+        저장 확인 창 등으로 창이 남아 있으면 트레이 아이콘도 유지되고,
+        창이 실제로 사라지면 _remove_dead_windows 가 트레이 아이콘을 정리한다.
+        """
+        if hwnd in self._hidden:
+            self._controller.close(hwnd)
 
     def _on_window_minimized(self, hwnd: int) -> None:
         if hwnd in self._hidden or not self._enumerator.is_app_window(hwnd):

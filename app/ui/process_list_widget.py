@@ -1,5 +1,4 @@
 """체크박스로 프로세스를 선택하는 목록 위젯."""
-
 from collections.abc import Iterable
 
 from PySide6.QtCore import Qt, Signal
@@ -17,11 +16,7 @@ class ProcessListWidget(QListWidget):
 
     _KEY_ROLE = Qt.ItemDataRole.UserRole
 
-    def __init__(
-        self,
-        icon_provider: ExecutableIconProvider,
-        parent: QWidget | None = None,
-    ) -> None:
+    def __init__(self, icon_provider: ExecutableIconProvider, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._icon_provider = icon_provider
         self.itemChanged.connect(self._on_item_changed)
@@ -37,55 +32,34 @@ class ProcessListWidget(QListWidget):
         """
         self.mousePressEvent(event)
 
-    def show_processes(
-        self,
-        processes: Iterable[ProcessInfo],
-        checked_keys: Iterable[str],
-    ) -> None:
+    def show_processes(self, processes: Iterable[ProcessInfo], checked_keys: Iterable[str]) -> None:
         checked = set(checked_keys)
         self.blockSignals(True)
         try:
             self.clear()
             for process in processes:
-                self.addItem(
-                    self._create_item(process, process.key in checked)
-                )
+                self.addItem(self._create_item(process, process.key in checked))
         finally:
             self.blockSignals(False)
 
     def listed_keys(self) -> set[str]:
-        return {
-            self.item(i).data(self._KEY_ROLE)
-            for i in range(self.count())
-        }
+        return {self.item(i).data(self._KEY_ROLE) for i in range(self.count())}
 
-    def _create_item(
-        self, process: ProcessInfo, checked: bool
-    ) -> QListWidgetItem:
-        item = QListWidgetItem(
-            self._icon_provider.icon_for(process.exe_path), process.name
-        )
+    def _create_item(self, process: ProcessInfo, checked: bool) -> QListWidgetItem:
+        item = QListWidgetItem(self._icon_provider.icon_for(process.exe_path), process.name)
         item.setToolTip(process.exe_path)
         item.setData(self._KEY_ROLE, process.key)
         # QListWidgetItem 은 ItemIsUserCheckable 이 기본으로 켜져 있으므로 명시적으로 끈다.
         # 기본 체크박스 클릭과 항목 클릭(itemClicked)이 겹쳐 두 번 토글되는 것을 막고,
         # 토글을 _toggle_item 한 곳으로 모으기 위함.
         item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsUserCheckable)
-        item.setCheckState(
-            Qt.CheckState.Checked
-            if checked
-            else Qt.CheckState.Unchecked
-        )
+        item.setCheckState(Qt.CheckState.Checked if checked else Qt.CheckState.Unchecked)
         return item
 
     @staticmethod
     def _toggle_item(item: QListWidgetItem) -> None:
         is_checked = item.checkState() == Qt.CheckState.Checked
-        item.setCheckState(
-            Qt.CheckState.Unchecked
-            if is_checked
-            else Qt.CheckState.Checked
-        )
+        item.setCheckState(Qt.CheckState.Unchecked if is_checked else Qt.CheckState.Checked)
 
     def _on_item_changed(self, item: QListWidgetItem) -> None:
         checked = item.checkState() == Qt.CheckState.Checked

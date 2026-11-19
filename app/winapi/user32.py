@@ -22,6 +22,9 @@ WINEVENT_OUTOFCONTEXT = 0x0000
 WINEVENT_SKIPOWNPROCESS = 0x0002
 OBJID_WINDOW = 0
 
+# 메시지
+WM_CLOSE = 0x0010
+
 EnumWindowsProc = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
 WinEventProc = ctypes.WINFUNCTYPE(
     None,
@@ -66,3 +69,5 @@ user32.SetWinEventHook.argtypes = [
 user32.SetWinEventHook.restype = wintypes.HANDLE
 user32.UnhookWinEvent.argtypes = [wintypes.HANDLE]
 user32.UnhookWinEvent.restype = wintypes.BOOL
+user32.PostMessageW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM]
+user32.PostMessageW.restype = wintypes.BOOL

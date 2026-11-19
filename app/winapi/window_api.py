@@ -7,6 +7,7 @@ from app.winapi.user32 import (
     GWL_EXSTYLE,
     SW_HIDE,
     SW_RESTORE,
+    WM_CLOSE,
     WS_EX_TOOLWINDOW,
     EnumWindowsProc,
     user32,
@@ -65,3 +66,8 @@ def restore_window(hwnd: int) -> None:
     """숨겨진 최소화 창을 원래 크기로 복원하고 전면으로 가져온다."""
     user32.ShowWindow(hwnd, SW_RESTORE)
     user32.SetForegroundWindow(hwnd)
+
+
+def post_close(hwnd: int) -> None:
+    """창에 WM_CLOSE 를 비동기로 보낸다(응답 없는 앱에서도 호출이 막히지 않는다)."""
+    user32.PostMessageW(hwnd, WM_CLOSE, 0, 0)

@@ -5,9 +5,11 @@ from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 
 
 class TrayEntry(QObject):
-    """클릭 또는 메뉴의 '복원' 선택 시 restore_requested(hwnd) 를 발생시킨다."""
+    """클릭 또는 메뉴의 '복원' 선택 시 restore_requested(hwnd),
+    메뉴의 '종료' 선택 시 close_requested(hwnd) 를 발생시킨다."""
 
     restore_requested = Signal(int)
+    close_requested = Signal(int)
 
     _RESTORE_REASONS = (
         QSystemTrayIcon.ActivationReason.Trigger,
@@ -20,6 +22,7 @@ class TrayEntry(QObject):
 
         self._menu = QMenu()
         self._menu.addAction("복원").triggered.connect(self._request_restore)
+        self._menu.addAction("종료").triggered.connect(self._request_close)
 
         self._tray = QSystemTrayIcon(icon, self)
         self._tray.setToolTip(title)
@@ -39,3 +42,6 @@ class TrayEntry(QObject):
 
     def _request_restore(self, *_args) -> None:
         self.restore_requested.emit(self._hwnd)
+
+    def _request_close(self, *_args) -> None:
+        self.close_requested.emit(self._hwnd)

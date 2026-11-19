@@ -9,6 +9,9 @@ class WindowController:
     def restore(self, hwnd: int) -> None:
         window_api.restore_window(hwnd)
 
+    def close(self, hwnd: int) -> None:
+        window_api.post_close(hwnd)
+
     def is_alive(self, hwnd: int) -> bool:
         return window_api.is_window(hwnd)
 
