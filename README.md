@@ -5,6 +5,7 @@ Minimizing app to tray for Windows. Made by Claude Sonnet 5.5
 - [Python](https://www.python.org) >= 3.10.0
 - [PySide6](https://pypi.org/project/PySide6/) >= 6.6
 - [psutil](https://pypi.org/project/psutil/) >= 5.9
+<tab>
 
 ### Environment Setup
 Follow the next step to launch venv & upgrade pip and installing dependencies.
