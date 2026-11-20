@@ -29,8 +29,10 @@ build.bat
 ### Installer Build
 #### Requirements
 - [Inno Setup](https://jrsoftware.org/inno-setup) >= 7.0
+
 <br>
-- Terminal
+
+#### Terminal
 ```
 installer.bat
 ```
