@@ -5,7 +5,7 @@
 ## 실행
 
 ```
-pip install -r requirements.txt
+pip install -e .
 python main.py
 ```
 
@@ -25,6 +25,26 @@ python main.py
 - 설정 창을 닫아도 백그라운드에서 계속 동작합니다. 종료는 제어 아이콘 우클릭 > 종료.
   (종료 시 트레이에 숨겨진 창은 모두 자동 복원됩니다.)
 
+## 빌드
+
+버전은 `pyproject.toml` 의 `version` 하나로 관리합니다. exe 파일 속성 버전과 인스톨러 버전 모두 이 값에서 만들어집니다.
+
+1. exe 버전 정보 파일 생성: `python installer\make_version_info.py` → `installer\version_info.txt`
+   (PyInstaller 실행 **전에** 실행하고, PyInstaller 에 `--version-file` 로 전달합니다.)
+2. PyInstaller onedir 빌드 → `out\tray_minimizer\`
+3. 인스톨러 빌드: [Inno Setup](https://jrsoftware.org/isinfo.php) 6.3 이상 필요
+
+```
+installer.bat
+```
+
+`installer.bat` 는 `ISCC.exe`(Inno Setup 명령줄 컴파일러)를 PATH 와 기본 설치 경로에서 찾아 실행합니다.
+(Python 3.10 에서는 `pip install tomli` 가 필요합니다. `iscc` 를 직접 실행하면 `AppVersion` 이 없어 오류가 납니다.)
+
+- 결과물: `installer\Output\TrayMinimizer_Setup_<버전>.exe`
+- 설치 과정: 라이선스 동의 → 모든 사용자용/현재 사용자용 선택 → 설치 경로 → 바탕 화면/시작 메뉴 체크박스
+- Windows '설치된 앱'에 등록되며, 제거 창의 "설정 데이터도 삭제" 체크박스로 설정 데이터(`%APPDATA%\TrayMinimizer`) 삭제 여부를 고른 뒤 "제거"를 누릅니다(옵션 페이지 → 제거 진행 페이지 순). 옵션 페이지에서 "취소"를 누르면 아무것도 삭제하지 않고 중단합니다.
+- 배포 전 `LICENSE.txt` 를 실제 라이선스로 교체하세요.
 ## 구조
 
 | 패키지 | 책임 |

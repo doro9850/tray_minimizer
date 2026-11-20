@@ -13,7 +13,7 @@ Follow the next step to launch venv & upgrade pip and installing dependencies.
 python -m venv .venv
 .venv\Scripts\activate
 python -m pip install --upgrade pip
-pip install .
+pip install -e .
 
 ```
 

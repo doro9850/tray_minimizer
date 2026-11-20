@@ -224,3 +224,6 @@ __marimo__/
 
 # Build Output
 out/
+
+# Installer Output
+installer/Output
