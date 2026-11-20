@@ -34,7 +34,10 @@ class SettingsRepository:
         targets = data.get("tray_targets", [])
         if not isinstance(targets, list):
             return AppSettings()
-        return AppSettings(tray_targets=[t for t in targets if isinstance(t, str)])
+        return AppSettings(
+            tray_targets=[t for t in targets if isinstance(t, str)],
+            start_minimized=data.get("start_minimized") is True,
+        )
 
     def save(self, settings: AppSettings) -> None:
         """임시 파일에 쓴 뒤 교체하여 저장 도중 손상을 방지한다."""

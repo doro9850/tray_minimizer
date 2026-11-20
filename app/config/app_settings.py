@@ -7,6 +7,8 @@ class AppSettings:
     """영속화 대상 설정.
 
     tray_targets: 트레이 최소화 대상 프로세스의 실행 파일 경로 목록.
+    start_minimized: 앱 시작 시 설정 창을 띄우지 않고 트레이에서 시작할지 여부.
     """
 
     tray_targets: list[str] = field(default_factory=list)
+    start_minimized: bool = False

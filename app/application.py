@@ -6,6 +6,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QStyle
 
 from app.config.settings_repository import SettingsRepository
+from app.config.startup_options import StartupOptions
 from app.config.target_store import TargetStore
 from app.core.process_selection_controller import ProcessSelectionController
 from app.core.tray_minimize_service import TrayMinimizeService
@@ -32,7 +33,10 @@ class Application:
         self._qt_app.setWindowIcon(self._app_icon)
 
         # 설정은 생성 시점에 파일에서 로드되므로 재시작 후에도 유지된다.
-        self._store = TargetStore(SettingsRepository.default())
+        repository = SettingsRepository.default()
+        settings = repository.load()
+        self._store = TargetStore(repository, settings)
+        self._startup = StartupOptions(repository, settings)
         icon_provider = ExecutableIconProvider()
         window_enumerator = WindowEnumerator()
         path_resolver = ProcessPathResolver()
@@ -50,6 +54,8 @@ class Application:
         )
 
         self._window = MainWindow(icon_provider)
+        self._window.set_start_minimized(self._startup.start_minimized)
+        self._window.start_minimized_toggled.connect(self._startup.set_start_minimized)
         self._selection = ProcessSelectionController(
             self._window, scanner, self._store, self._service
         )
@@ -58,7 +64,8 @@ class Application:
     def run(self) -> int:
         self._service.start()
         self._control_tray.show()
-        self._window.show()
+        if not self._startup.start_minimized:
+            self._window.show()
         return self._qt_app.exec()
 
     def _load_app_icon(self) -> QIcon:

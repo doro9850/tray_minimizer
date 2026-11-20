@@ -3,7 +3,15 @@ from collections.abc import Iterable
 
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QCloseEvent, QShowEvent
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 from app.icons.executable_icon_provider import ExecutableIconProvider
 from app.process.process_info import ProcessInfo
@@ -16,6 +24,7 @@ class MainWindow(QMainWindow):
     refresh_requested = Signal()
     clear_inactive_requested = Signal()
     target_toggled = Signal(str, bool)
+    start_minimized_toggled = Signal(bool)
 
     def __init__(self, icon_provider: ExecutableIconProvider) -> None:
         super().__init__()
@@ -28,6 +37,8 @@ class MainWindow(QMainWindow):
         self._inactive_label = QLabel()
         self._clear_button = QPushButton("미실행 항목 해제")
         self._clear_button.clicked.connect(self.clear_inactive_requested)
+        self._start_minimized_check = QCheckBox("시작 시 최소화 (트레이에서 시작)")
+        self._start_minimized_check.toggled.connect(self.start_minimized_toggled)
         refresh_button = QPushButton("새로고침")
         refresh_button.clicked.connect(self.refresh_requested)
 
@@ -44,6 +55,12 @@ class MainWindow(QMainWindow):
         """실행 중이 아니지만 등록되어 있는 항목 수를 표시한다."""
         self._inactive_label.setText(f"실행 중이 아닌 등록 항목: {count}개 (실행 시 자동 적용)")
         self._clear_button.setEnabled(count > 0)
+
+    def set_start_minimized(self, enabled: bool) -> None:
+        """저장된 값을 체크박스에 반영한다(변경 시그널은 발생시키지 않는다)."""
+        self._start_minimized_check.blockSignals(True)
+        self._start_minimized_check.setChecked(enabled)
+        self._start_minimized_check.blockSignals(False)
 
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)
@@ -65,6 +82,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(guide)
         layout.addWidget(self._list, stretch=1)
         layout.addLayout(footer)
+        layout.addWidget(self._start_minimized_check)
         layout.addWidget(refresh_button)
 
         container = QWidget()

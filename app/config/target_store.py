@@ -3,18 +3,28 @@ from collections.abc import Iterable
 
 from PySide6.QtCore import QObject, Signal
 
+from app.config.app_settings import AppSettings
 from app.config.settings_repository import SettingsRepository
 
 
 class TargetStore(QObject):
-    """대상 프로세스 키(정규화된 실행 파일 경로)를 보관한다."""
+    """대상 프로세스 키(정규화된 실행 파일 경로)를 보관한다.
+
+    settings 인스턴스는 다른 설정 객체(StartupOptions 등)와 공유하므로
+    저장 시 서로의 값을 덮어쓰지 않는다.
+    """
 
     changed = Signal()
 
-    def __init__(self, repository: SettingsRepository, parent: QObject | None = None) -> None:
+    def __init__(
+        self,
+        repository: SettingsRepository,
+        settings: AppSettings,
+        parent: QObject | None = None,
+    ) -> None:
         super().__init__(parent)
         self._repository = repository
-        self._settings = repository.load()
+        self._settings = settings
         self._targets: set[str] = set(self._settings.tray_targets)
 
     @property
